@@ -7,10 +7,10 @@ from nltk import word_tokenize
 nltk.download('punkt')
 from nltk.tag import CRFTagger
 import pycrfsuite
-
+from flask_mysqldb import MySQL
 
 # Data Training
-data_training = pd.read_excel("data/data_anotation.xlsx",sheet_name="4k-fix",usecols=["currentword","currenttag",'bef1tag','token','class'])
+data_training = pd.read_excel("data/data_anotation_v2.xlsx",sheet_name="5k-fix",usecols=["currentword","currenttag",'bef1tag','token','class'])
 
 # Remove Single Character
 def removeSingleChar(text):
@@ -124,7 +124,7 @@ def predict_statistic(teks):
         print(len(teksNew))
         panjang = len(teksNew)
         for i in range(panjang):
-            result_arr.append({teksNew[i][0]:predicted_arr[i]})
+            result_arr.append({'teks':teksNew[i][0],'label':predicted_arr[i]})
     
     return result_arr
         
