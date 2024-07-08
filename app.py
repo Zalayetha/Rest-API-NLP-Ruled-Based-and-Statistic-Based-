@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from NaiveBayes.naive_bayes import predict_statistic
+from INER.rule_based import predict_rule_based
 from flask_mysqldb import MySQL
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = '127.0.0.1'
@@ -11,8 +12,15 @@ mysql = MySQL(app)
 @app.route("/statistic",methods=['GET'])
 def statistic():
     text = request.args.get('text')
-    response = {'zresult':predict_statistic(text)}
+    response = {'zresult':predict_statistic(teks=text)}
     return jsonify(response)
+
+@app.route("/rule",methods=['GET'])
+def rule():
+    text = request.args.get('text')
+    response = {'zresult':predict_rule_based(text=text)}
+    return jsonify(response)
+
 
 # @app.route('/data/<int:id>',methods=['GET'])
 # def get_data_by_id(id):
