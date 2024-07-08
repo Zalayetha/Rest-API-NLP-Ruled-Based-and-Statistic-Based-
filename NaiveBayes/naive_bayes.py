@@ -10,7 +10,7 @@ import pycrfsuite
 from flask_mysqldb import MySQL
 
 # Data Training
-data_training = pd.read_excel("data/data_anotation_v2.xlsx",sheet_name="5k-fix",usecols=["currentword","currenttag",'bef1tag','token','class'])
+data_training = pd.read_excel("data/data_anotation_v3.xlsx",sheet_name="5k-nostem",usecols=["currentword","currenttag",'bef1tag','token','class'])
 
 # Remove Single Character
 def removeSingleChar(text):
