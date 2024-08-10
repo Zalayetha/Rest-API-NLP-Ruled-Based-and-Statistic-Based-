@@ -474,30 +474,40 @@ def match_waktu_bencana(tokens):
 
 
 def predict_rule_based(text):
-   predictions = []
-   tokens = word_tokenize(text)
-   classified_tokens = [classify_token(token) for token in tokens]
-   classified_contextual_features = classify_contextual_features(classified_tokens,contextual_features_dictionary)
-   classified_morphological_features = classify_morphological_features(classified_contextual_features,morphological_features_dictionary)
-   classified_partOfSpeech_features = classify_partOfSpeech_features(classified_morphological_features,partOfSpeech_features_dictionary)
-   # Apply the rules
-   lokasi = match_lokasi_bencana(classified_partOfSpeech_features)
-   dampak = match_dampak_bencana(classified_partOfSpeech_features)
-   jenis = match_jenis_bencana(classified_partOfSpeech_features)
-   waktu = match_waktu_bencana(classified_partOfSpeech_features)
+    result = []
 
-   for token in tokens:
-    if token in list(lokasi):
-        predictions.append({'teks':token,'label':"Lokasi"})
-    elif token in list(dampak):
-        predictions.append({'teks':token,'label':"Dampak"})
-    elif token in list(jenis):
-        predictions.append({'teks':token,'label':"Bencana"})
-    elif token in list(waktu):
-        predictions.append({'teks':token,'label':"Waktu"})
-    else:
-        predictions.append({'teks':token,'label':"Other"})
-   return predictions
+    # split if teks is multiple sentences
+    pattern = r'(?<!\d)\. (?!\d)|(?<=\w)[!?]'
+    request_teks = [k.strip() for k in re.split(pattern, text) if k.strip()]
+
+    for teks in request_teks:
+        predictions = []
+        tokens = word_tokenize(text)
+        classified_tokens = [classify_token(token) for token in tokens]
+        classified_contextual_features = classify_contextual_features(classified_tokens,contextual_features_dictionary)
+        classified_morphological_features = classify_morphological_features(classified_contextual_features,morphological_features_dictionary)
+        classified_partOfSpeech_features = classify_partOfSpeech_features(classified_morphological_features,partOfSpeech_features_dictionary)
+        # Apply the rules
+        lokasi = match_lokasi_bencana(classified_partOfSpeech_features)
+        dampak = match_dampak_bencana(classified_partOfSpeech_features)
+        jenis = match_jenis_bencana(classified_partOfSpeech_features)
+        waktu = match_waktu_bencana(classified_partOfSpeech_features)
+
+        for token in tokens:
+            if token in list(lokasi):
+                predictions.append({'teks':token,'label':"Lokasi"})
+            elif token in list(dampak):
+                predictions.append({'teks':token,'label':"Dampak"})
+            elif token in list(jenis):
+                predictions.append({'teks':token,'label':"Bencana"})
+            elif token in list(waktu):
+                predictions.append({'teks':token,'label':"Waktu"})
+            else:
+                predictions.append({'teks':token,'label':"Other"})
+        
+        result.append(predictions)
+    
+    return result
    
 
 
