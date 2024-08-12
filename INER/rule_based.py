@@ -482,7 +482,7 @@ def predict_rule_based(text):
 
     for teks in request_teks:
         predictions = []
-        tokens = word_tokenize(text)
+        tokens = word_tokenize(teks)
         classified_tokens = [classify_token(token) for token in tokens]
         classified_contextual_features = classify_contextual_features(classified_tokens,contextual_features_dictionary)
         classified_morphological_features = classify_morphological_features(classified_contextual_features,morphological_features_dictionary)
