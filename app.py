@@ -3,19 +3,10 @@ from NaiveBayes.naive_bayes import predict_statistic
 from INER.rule_based import predict_rule_based
 from flask_mysqldb import MySQL
 import pandas as pd
-from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_PORT'] = 8889
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root'
-app.config['MYSQL_DB'] = 'db_ner'
-mysql = MySQL(app)
 
-# Configure SQLAlchemy engine
-engine = create_engine(f"mysql+pymysql://{app.config['MYSQL_USER']}:{app.config['MYSQL_PASSWORD']}@{app.config['MYSQL_HOST']}:{app.config['MYSQL_PORT']}/{app.config['MYSQL_DB']}")
 @app.route("/statistic",methods=['GET'])
 def statistic():
     text = request.args.get('text')
@@ -36,6 +27,7 @@ def rule():
 #     data = cur.fetchall()
 #     cur.close()
 #     return jsonify(data)
+
 
 @app.route("/rule/upload",methods=['POST'])
 def upload_dataset():
