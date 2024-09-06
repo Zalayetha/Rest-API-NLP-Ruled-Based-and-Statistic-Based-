@@ -7,6 +7,17 @@ import pandas as pd
 
 app = Flask(__name__)
 
+# app configuration
+app.config["MYSQL_HOST"] = 'localhost'
+app.config["MYSQL_USER"] = 'root'
+app.config["MYSQL_PASSWORD"] = ''
+app.config["MYSQL_DB"] = 'NERDISASTER'
+
+
+# mysql configuration
+mysql = MySQL(app=app)
+
+
 @app.route("/statistic",methods=['GET'])
 def statistic():
     text = request.args.get('text')
@@ -18,16 +29,6 @@ def rule():
     text = request.args.get('text')
     response = {'zresult':predict_rule_based(text=text)}
     return jsonify(response)
-
-
-# @app.route('/data/<int:id>',methods=['GET'])
-# def get_data_by_id(id):
-#     cur = mysql.connection.cursor()
-#     cur.execute('''SELECT * FROM test_aja where id = %s''',(id,))
-#     data = cur.fetchall()
-#     cur.close()
-#     return jsonify(data)
-
 
 @app.route("/rule/upload",methods=['POST'])
 def upload_dataset():
