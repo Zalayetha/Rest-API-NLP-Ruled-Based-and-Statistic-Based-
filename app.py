@@ -1,21 +1,17 @@
 from flask import Flask, jsonify, request
 from NaiveBayes.naive_bayes import predict_statistic
 from INER.rule_based import predict_rule_based
-from flask_mysqldb import MySQL
+from db.conn import getdb,close_db
 import pandas as pd
-
+from stopwords.stopwords import getStopwords
+from normalization.normalization import getNormalization
 
 app = Flask(__name__)
-
-# app configuration
-app.config["MYSQL_HOST"] = 'localhost'
-app.config["MYSQL_USER"] = 'root'
-app.config["MYSQL_PASSWORD"] = ''
-app.config["MYSQL_DB"] = 'NERDISASTER'
-
-
-# mysql configuration
-mysql = MySQL(app=app)
+app.config['MYSQL_HOST'] = '127.0.0.1'
+app.config['MYSQL_PORT'] = 8888
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'santana-db'
 
 
 @app.route("/statistic",methods=['GET'])
@@ -30,19 +26,22 @@ def rule():
     response = {'zresult':predict_rule_based(text=text)}
     return jsonify(response)
 
-@app.route("/rule/upload",methods=['POST'])
-def upload_dataset():
+@app.route("/stopwords",methods=['GET'])
+def stopwords():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'message': 'No data provided'}), 400
-        df = pd.DataFrame(data=data)
-        print(df)
-        df.to_sql(name='TrainTable', con=engine,if_exists='replace', index=False)
-
-        return jsonify({'message': 'DataFrame successfully stored in the database'}), 200
+        connection = getdb()
+        stopwords = getStopwords(connection)
+        return jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":stopwords}), 200
     except Exception as e:
-        return jsonify({'message': str(e)}), 500
+        return jsonify({'message': str(e)},500)
 
+@app.route("/normalization",methods=['GET'])
+def normalization():
+    try:
+        connection = getdb()
+        normalization = getNormalization(connection)
+        return jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":normalization}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)},500)
 if __name__ == '__main__':
     app.run(debug=True)
