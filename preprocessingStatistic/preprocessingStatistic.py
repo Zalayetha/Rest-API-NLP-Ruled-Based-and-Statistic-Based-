@@ -4,6 +4,12 @@ def insertPreprocessingStatistic(connection,dataframe):
     print("data : ",dataframe)
     cursor = connection.cursor()
 
+    # get data preprcocesing statistic
+    data_preprocessing = getPreprocessingStatistic(connection=connection)
+    
+    if len(data_preprocessing) > 0:
+        deleteAllRecordPreprocessingStatistic(connection=connection)
+        
     # Translate classs statistic
     data = translateClassStatistic(connection=connection,data=dataframe)
 
@@ -55,7 +61,6 @@ def getPreprocessingStatistic(connection):
     cursor.execute("SELECT * FROM preprocessing_statistic")
     for row in cursor.fetchall():
         class_name = getClassStatisticById(id=int(row[5]),connection=connection)['class']
-        
         result.append({
             "currentword":row[1],
             "currenttag":row[3],
@@ -65,3 +70,10 @@ def getPreprocessingStatistic(connection):
         })
     cursor.close()
     return list(result)
+
+
+def deleteAllRecordPreprocessingStatistic(connection):
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM preprocessing_statistic")
+    connection.commit()
+    cursor.close()

@@ -70,7 +70,7 @@ def saveBioLabelingStatistic():
             data = getPreprocessingStatistic(connection=connection)
             return  jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":data}), 200
     except Exception as e:
-        return jsonify({'message': str(e)},500)
+        return jsonify({"responseStatus": False,'responseMesage': str(e)},500)
     
 
 if __name__ == '__main__':
