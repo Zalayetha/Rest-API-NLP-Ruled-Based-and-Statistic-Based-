@@ -5,6 +5,9 @@ from db.conn import getdb,close_db
 import pandas as pd
 from stopwords.stopwords import getStopwords
 from normalization.normalization import getNormalization
+from classStatistic.classStatistic import getClassStatistic
+from preprocessingStatistic.preprocessingStatistic import insertPreprocessingStatistic
+import json
 
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = '127.0.0.1'
@@ -43,5 +46,28 @@ def normalization():
         return jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":normalization}), 200
     except Exception as e:
         return jsonify({'message': str(e)},500)
+
+@app.route("/class-statistic",methods=['GET'])
+def classStatistic():
+    try:
+        connection = getdb()
+        classStatistic = getClassStatistic(connection)
+        return jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":classStatistic}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)},500)
+
+@app.route("/statistic/bio-labeling",methods=['POST'])
+def saveBioLabelingStatistic():
+    # try:
+        connection = getdb()
+        data = request.json
+        # convert json to dataframe
+        df = pd.read_json(data)
+        insertPreprocessingStatistic(dataframe=df,connection=connection)
+        return jsonify({"responseStatus": True,'responseMessage': 'Successfully insert data!'}), 200
+    # except Exception as e:
+    #     return jsonify({'message': str(e)},500)
+    
+
 if __name__ == '__main__':
     app.run(debug=True)
