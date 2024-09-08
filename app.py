@@ -6,7 +6,7 @@ import pandas as pd
 from stopwords.stopwords import getStopwords
 from normalization.normalization import getNormalization
 from classStatistic.classStatistic import getClassStatistic
-from preprocessingStatistic.preprocessingStatistic import insertPreprocessingStatistic
+from preprocessingStatistic.preprocessingStatistic import insertPreprocessingStatistic,getPreprocessingStatistic
 import json
 
 app = Flask(__name__)
@@ -56,17 +56,21 @@ def classStatistic():
     except Exception as e:
         return jsonify({'message': str(e)},500)
 
-@app.route("/statistic/bio-labeling",methods=['POST'])
+@app.route("/statistic/bio-labeling",methods=['POST','GET'])
 def saveBioLabelingStatistic():
-    # try:
+    try:
         connection = getdb()
-        data = request.json
-        # convert json to dataframe
-        df = pd.read_json(data)
-        insertPreprocessingStatistic(dataframe=df,connection=connection)
-        return jsonify({"responseStatus": True,'responseMessage': 'Successfully insert data!'}), 200
-    # except Exception as e:
-    #     return jsonify({'message': str(e)},500)
+        if request.method == 'POST':
+            data = request.json
+            # convert json to dataframe
+            df = pd.read_json(data)
+            insertPreprocessingStatistic(dataframe=df,connection=connection)
+            return jsonify({"responseStatus": True,'responseMessage': 'Successfully insert data!'}), 200
+        elif request.method == 'GET':
+            data = getPreprocessingStatistic(connection=connection)
+            return  jsonify({"responseStatus": True,'responseMessage': 'Successfully retrieved data!',"responseBody":data}), 200
+    except Exception as e:
+        return jsonify({'message': str(e)},500)
     
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from classStatistic.classStatistic import getClassStatistic
+from classStatistic.classStatistic import getClassStatistic,getClassStatisticById
 def insertPreprocessingStatistic(connection,dataframe):
     print("Insert Preprocessing Statistic....")
     print("data : ",dataframe)
@@ -6,6 +6,8 @@ def insertPreprocessingStatistic(connection,dataframe):
 
     # Translate classs statistic
     data = translateClassStatistic(connection=connection,data=dataframe)
+
+    # set the default value when class is None
     data.fillna(9, inplace=True)
     # Insert dataframe into MySQL table
     for index, row in data.iterrows():
@@ -30,8 +32,6 @@ def findIdByClass(className, data):
     return None
 
 # Function to translate class statistic to numeric based on id in database
-
-
 def translateClassStatistic(connection,data):
     print("Translate Class Statistic....")
     temp_df = data
@@ -49,12 +49,19 @@ def translateClassStatistic(connection,data):
     return temp_df
 
 
-# TODO : Nanti benerin ini
 def getPreprocessingStatistic(connection):
     result = []
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM preprocessing_statistic")
     for row in cursor.fetchall():
-        result.append({f"{row[1]}":f"{row[2]}"})
+        class_name = getClassStatisticById(id=int(row[5]),connection=connection)['class']
+        
+        result.append({
+            "currentword":row[1],
+            "currenttag":row[3],
+            "bef1tag":row[4],
+            "tokentype":row[2],
+            "class":class_name,
+        })
     cursor.close()
     return list(result)
